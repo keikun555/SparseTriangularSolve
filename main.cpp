@@ -23,12 +23,8 @@ int main(int argc, char *argv[]) {
 
   CCSMatrix<double> L;
   L.from_matrix_market_filename(L_filename);
-  L.print();
   L.to_lower_triangular();
-  L.print();
   L.fill_diag(1);
-  L.print();
-  return 0;
   DenseVector<double> b, x1;
   b.from_matrix_market_filename(b_filename);
   x1.from_dense_vector(&b);
@@ -42,18 +38,17 @@ int main(int argc, char *argv[]) {
   cout << "lower triangular solve completed in " << elapsed_seconds.count()
        << "s" << endl;
   // matrix mult
-  DenseVector<double> y;
-  y.from_num_zeros(b.dimension_get());
-  spmv_csc(L.num_col_get(), L.column_pointer_get(), L.row_index_get(),
-           L.values_get(), x1.values_get(), y.values_get());
-  for (int i = 0; i < b.dimension_get(); i++) {
-    if (abs(y.values_get()[i] - b.values_get()[i]) > 1e-10) {
-      cout << i << " " << y.values_get()[i] << " != " << b.values_get()[i]
-           << endl;
-    }
-  }
-  cout << "matrix multiplication verified" << endl;
-  return 0;
+  // DenseVector<double> y;
+  // y.from_num_zeros(b.dimension_get());
+  // spmv_csc(L.num_col_get(), L.column_pointer_get(), L.row_index_get(),
+  //          L.values_get(), x1.values_get(), y.values_get());
+  // for (int i = 0; i < b.dimension_get(); i++) {
+  //   if (abs(y.values_get()[i] - b.values_get()[i]) > 1e-10) {
+  //     cout << i << " " << y.values_get()[i] << " != " << b.values_get()[i]
+  //          << endl;
+  //   }
+  // }
+  // cout << "matrix multiplication verified" << endl;
 
   DenseVector<double> x2;
   x2.from_dense_vector(&b);

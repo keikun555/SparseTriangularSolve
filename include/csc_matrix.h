@@ -98,7 +98,6 @@ template <typename T> void CCSMatrix<T>::fill_diag(T fill_num) {
       // skip non lower triangular part of column
       val_idx++;
     }
-    column_pointer[j] = num_val;
     if (row_index[val_idx] > j) {
       // if diagonal is zero, make it nonzero
       new_num_val++;
@@ -111,20 +110,23 @@ template <typename T> void CCSMatrix<T>::fill_diag(T fill_num) {
   num_val = 0;
   for (int j = 0; j < num_col; j++) {
     // for every column
-    while (row_index[val_idx] < j) {
-      // skip non lower triangular part of column
-      val_idx++;
-    }
     column_pointer[j] = num_val;
+    while (row_index[val_idx] < j) {
+      // copy non lower triangular part of column
+      new_values[num_val] = values[val_idx];
+      new_row_index[num_val] = row_index[val_idx];
+      val_idx++;
+      num_val++;
+    }
     if (row_index[val_idx] > j) {
       // if diagonal is zero, make it nonzero
       new_values[num_val] = fill_num;
       new_row_index[num_val] = j;
-      val_idx++;
       num_val++;
+      val_idx++;
     }
     while (val_idx < column_pointer[j + 1]) {
-      // for every elt in the lower triangular part of column
+      // copy lower triangular part of column
       new_values[num_val] = values[val_idx];
       new_row_index[num_val] = row_index[val_idx];
       val_idx++;

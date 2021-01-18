@@ -1,7 +1,10 @@
 .vscode/*
 boost/*
 boost_source/*
+boost_source
 log*
 err_log*
 *torso*.mtx
 *TSOPF*.mtx
+*.o
+main
