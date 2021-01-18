@@ -30,7 +30,7 @@ int parallel_lsolve(int n, int *Lp, int *Li, double *Lx, double *x) {
     return 1;               /* check inputs */
   for (j = 0; j < n; j++) { // for every col in L, row in x
     x[j] /= Lx[Lp[j]];      // hopefully the diagonals are nonzero
-#pragma omp parallel
+#pragma omp parallel shared(Lp, Li, Lx, x, j) private(p)
 #pragma omp for
     for (p = Lp[j] + 1; p < Lp[j + 1]; p++) {
       x[Li[p]] -= Lx[p] * x[Li[Lp[j]]];

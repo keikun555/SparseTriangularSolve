@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "include/matrix.h"
+#include "matrix.h"
 
 using namespace std;
 

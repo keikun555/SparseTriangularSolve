@@ -1,4 +1,6 @@
 .vscode/*
+boost/*
+boost_source/*
 log*
 err_log*
 *torso*.mtx

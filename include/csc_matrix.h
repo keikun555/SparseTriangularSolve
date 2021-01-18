@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "include/matrix.h"
+#include "matrix.h"
 
 using namespace std;
 
@@ -14,6 +14,7 @@ public:
   ~CCSMatrix();
   void from_matrix_market_filename(string const &matrix_market_filename);
   void to_lower_triangular();
+  void fill_diag(T fill_num);
   void clear();
   void print();
   int num_row_get() { return num_row; };
@@ -86,6 +87,55 @@ template <typename T> void CCSMatrix<T>::to_lower_triangular() {
     }
   }
   column_pointer[num_col] = num_val;
+}
+
+template <typename T> void CCSMatrix<T>::fill_diag(T fill_num) {
+  int new_num_val = num_val;
+  int val_idx = 0;
+  for (int j = 0; j < num_col; j++) {
+    // for every column
+    while (row_index[val_idx] < j) {
+      // skip non lower triangular part of column
+      val_idx++;
+    }
+    column_pointer[j] = num_val;
+    if (row_index[val_idx] > j) {
+      // if diagonal is zero, make it nonzero
+      new_num_val++;
+    }
+    val_idx = column_pointer[j + 1];
+  }
+  int *new_row_index = new int[new_num_val];
+  T *new_values = new T[new_num_val];
+  val_idx = 0;
+  num_val = 0;
+  for (int j = 0; j < num_col; j++) {
+    // for every column
+    while (row_index[val_idx] < j) {
+      // skip non lower triangular part of column
+      val_idx++;
+    }
+    column_pointer[j] = num_val;
+    if (row_index[val_idx] > j) {
+      // if diagonal is zero, make it nonzero
+      new_values[num_val] = fill_num;
+      new_row_index[num_val] = j;
+      val_idx++;
+      num_val++;
+    }
+    while (val_idx < column_pointer[j + 1]) {
+      // for every elt in the lower triangular part of column
+      new_values[num_val] = values[val_idx];
+      new_row_index[num_val] = row_index[val_idx];
+      val_idx++;
+      num_val++;
+    }
+  }
+  column_pointer[num_col] = num_val;
+  delete[] row_index;
+  delete[] values;
+  row_index = new_row_index;
+  values = new_values;
 }
 
 template <typename T> CCSMatrix<T>::~CCSMatrix() { this->clear(); }
