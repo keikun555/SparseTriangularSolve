@@ -16,6 +16,7 @@ public:
   Partition(){};
   ~Partition();
   template <typename T> void from_lower_triangular_matrix(CCSMatrix<T> *matrix);
+  vector<vector<int>> partitioning_get() { return partitioning; };
   void clear();
   void print();
 
@@ -41,20 +42,22 @@ void Partition::from_lower_triangular_matrix(CCSMatrix<T> *matrix) {
          p < matrix->column_pointer_get()[j + 1]; p++) {
       // for every elt in the column
       int row_idx = matrix->row_index_get()[p];
-      if (row_idx != j && matrix->values_get()[p] != 0) {
-        // if elt is nonzero the corresponding column is dependent on current
+      if (row_idx > j && matrix->values_get()[p] != 0) {
+        // if elt is nonzero, the corresponding column is dependent on current
         // col
-        // #pragma omp critical
         dependency_graph.insertEdge(j, row_idx, 0, 0);
         num_parents_dict.update(row_idx, num_parents_dict.get(row_idx) + 1);
         if (orphans.contains(row_idx)) {
           orphans.remove(row_idx);
         }
-        break;
+        // break; // only first nonzero elt off diagonal
+        // not sure why uncommenting the above line breaks TSOPF
+        // since we should be able to skip the non first nonzero elt off the
+        // diagonal
       }
     }
   }
-  cout << "dependency graph populated" << endl;
+  // cout << "dependency graph populated" << endl;
   // level partitioning
   unsigned int num_partitioned =
       0; // counter to check for circular dependencies
@@ -64,6 +67,7 @@ void Partition::from_lower_triangular_matrix(CCSMatrix<T> *matrix) {
       int v = partition[i];
       num_partitioned++;
       orphans.remove(v);
+      // cout << v << " " << num_parents_dict.get(v) << endl;
       vector<Edge<int, int, int>> outgoing_edges =
           dependency_graph.getOutgoingEdges(v);
       for (unsigned int j = 0; j < outgoing_edges.size(); j++) {
@@ -79,7 +83,7 @@ void Partition::from_lower_triangular_matrix(CCSMatrix<T> *matrix) {
   }
   // if we reached here with num_partitioned < num_vertices, we have a circular
   // dependency
-  if (num_partitioned < dependency_graph.getVertices().size()) {
+  if (num_partitioned != dependency_graph.getVertices().size()) {
     throw runtime_error("Circular dependency found during partitioning, is the "
                         "matrix really lower triangular?");
   }

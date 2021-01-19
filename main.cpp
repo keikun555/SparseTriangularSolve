@@ -21,47 +21,48 @@ int main(int argc, char *argv[]) {
   string L_filename(argv[1]);
   string b_filename(argv[2]);
 
-  CCSMatrix<double> L;
+  CCSMatrix<long double> L;
   L.from_matrix_market_filename(L_filename);
   L.to_lower_triangular();
   L.fill_diag(1);
-  DenseVector<double> b, x1;
+  DenseVector<long double> b, x1;
   b.from_matrix_market_filename(b_filename);
   x1.from_dense_vector(&b);
   cout << "loaded files" << endl;
   chrono::time_point<chrono::system_clock> start, end;
   start = chrono::system_clock::now();
-  lsolve(L.num_col_get(), L.column_pointer_get(), L.row_index_get(),
-         L.values_get(), x1.values_get());
+  lsolve<long double>(L.num_col_get(), L.column_pointer_get(), L.row_index_get(),
+                 L.values_get(), x1.values_get());
   end = chrono::system_clock::now();
-  chrono::duration<double> elapsed_seconds = end - start;
+  chrono::duration<long double> elapsed_seconds = end - start;
   cout << "lower triangular solve completed in " << elapsed_seconds.count()
        << "s" << endl;
   // matrix mult
-  // DenseVector<double> y;
-  // y.from_num_zeros(b.dimension_get());
-  // spmv_csc(L.num_col_get(), L.column_pointer_get(), L.row_index_get(),
-  //          L.values_get(), x1.values_get(), y.values_get());
-  // for (int i = 0; i < b.dimension_get(); i++) {
-  //   if (abs(y.values_get()[i] - b.values_get()[i]) > 1e-10) {
-  //     cout << i << " " << y.values_get()[i] << " != " << b.values_get()[i]
-  //          << endl;
-  //   }
-  // }
-  // cout << "matrix multiplication verified" << endl;
+  DenseVector<long double> y;
+  y.from_num_zeros(b.dimension_get());
+  spmv_csc(L.num_col_get(), L.column_pointer_get(), L.row_index_get(),
+           L.values_get(), x1.values_get(), y.values_get());
+  for (int i = 0; i < b.dimension_get(); i++) {
+    if (abs(y.values_get()[i] - b.values_get()[i]) > 1e-3) {
+      cout << i << " " << y.values_get()[i] << " != " << b.values_get()[i]
+           << endl;
+    }
+  }
+  cout << "matrix multiplication verified" << endl;
+  // return 0;
 
-  DenseVector<double> x2;
+  DenseVector<long double> x2;
   x2.from_dense_vector(&b);
   start = chrono::system_clock::now();
-  parallel_lsolve(L.num_col_get(), L.column_pointer_get(), L.row_index_get(),
-                  L.values_get(), x2.values_get());
+  parallel_lsolve<long double>(L.num_col_get(), L.column_pointer_get(),
+                          L.row_index_get(), L.values_get(), x2.values_get());
   end = chrono::system_clock::now();
   elapsed_seconds = end - start;
   cout << "parallel lower triangular solve completed in "
        << elapsed_seconds.count() << "s" << endl;
   // verify
   for (int i = 0; i < x1.dimension_get(); i++) {
-    if (x1.values_get()[i] != x2.values_get()[i]) {
+    if (abs(x1.values_get()[i] - x2.values_get()[i]) > 1e-3) {
       cout << i << " " << x1.values_get()[i] << " != " << x2.values_get()[i]
            << endl;
     }
@@ -71,23 +72,35 @@ int main(int argc, char *argv[]) {
   x2.clear();
   x2.from_dense_vector(&b);
   Partition partition;
-  partition.from_lower_triangular_matrix<double>(&L);
-  partition.print();
-  return 0;
+  partition.from_lower_triangular_matrix<long double>(&L);
   start = chrono::system_clock::now();
-  parallel_lsolve(L.num_col_get(), L.column_pointer_get(), L.row_index_get(),
-                  L.values_get(), x2.values_get());
+  partitioned_parallel_lsolve<long double>(L.column_pointer_get(), L.row_index_get(),
+                                      L.values_get(), x2.values_get(),
+                                      partition.partitioning_get());
   end = chrono::system_clock::now();
   elapsed_seconds = end - start;
-  cout << "parallel lower triangular solve completed in "
+  cout << "partitioned parallel lower triangular solve completed in "
        << elapsed_seconds.count() << "s" << endl;
   // verify
   for (int i = 0; i < x1.dimension_get(); i++) {
-    if (x1.values_get()[i] != x2.values_get()[i]) {
+    if (abs(x1.values_get()[i] - x2.values_get()[i]) > 1e-3) {
       cout << i << " " << x1.values_get()[i] << " != " << x2.values_get()[i]
            << endl;
     }
   }
   cout << "verified" << endl;
+  // matrix mult
+  // DenseVector<long double> y;
+  y.clear();
+  y.from_num_zeros(b.dimension_get());
+  spmv_csc<long double>(L.num_col_get(), L.column_pointer_get(), L.row_index_get(),
+                   L.values_get(), x2.values_get(), y.values_get());
+  for (int i = 0; i < b.dimension_get(); i++) {
+    if (abs(y.values_get()[i] - b.values_get()[i]) > 1e-3) {
+      cout << i << " " << y.values_get()[i] << " != " << b.values_get()[i]
+           << endl;
+    }
+  }
+  cout << "matrix multiplication verified" << endl;
   return 0;
 }

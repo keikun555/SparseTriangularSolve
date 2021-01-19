@@ -1,5 +1,5 @@
-HFILES=$(shell ls -1 *.h include/*.h)
-OFILES=matrix_operations.o
+HFILES=$(shell ls -1 include/*.h)
+OFILES=
 CC=g++
 CC_FLAGS=-fopenmp -Wall -Werror -g -o3 -I ./include -std=c++11
 
