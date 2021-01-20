@@ -30,7 +30,6 @@ int main(int argc, char *argv[]) {
   DenseVector<long double> b, target_x;
   b.from_matrix_market_filename(b_filename);
   target_x.from_dense_vector(&b);
-  cout << "loaded files" << endl;
 
   // naive
   chrono::time_point<chrono::system_clock> start, end;
@@ -38,8 +37,7 @@ int main(int argc, char *argv[]) {
   lsolve<long double>(&L, &target_x);
   end = chrono::system_clock::now();
   chrono::duration<long double> elapsed_seconds = end - start;
-  cout << "lower triangular solve completed in " << elapsed_seconds.count()
-       << "s" << endl;
+  cout << elapsed_seconds.count();
   // matrix multiplication to verify the original algorithm
   DenseVector<long double> y;
   y.from_num_zeros(b.dimension_get());
@@ -57,12 +55,14 @@ int main(int argc, char *argv[]) {
   start = chrono::system_clock::now();
   parallel_lsolve<long double>(&L, &x);
   end = chrono::system_clock::now();
-  elapsed_seconds = end - start;
-  cout << "parallel lower triangular solve completed in "
-       << elapsed_seconds.count() << "s" << endl;
+  cout << ",";
   // verify
-  if (!x.equals(&target_x, THRESHOLD)) {
-    cerr << "parallel lower triangular solve verification failed, output does not match original algorithm"
+  if (x.equals(&target_x, THRESHOLD)) {
+    elapsed_seconds = end - start;
+    cout << elapsed_seconds.count();
+  } else {
+    cerr << "parallel lower triangular solve verification failed, output does "
+            "not match original algorithm"
          << endl;
   }
 
@@ -74,13 +74,16 @@ int main(int argc, char *argv[]) {
   start = chrono::system_clock::now();
   partitioned_parallel_lsolve<long double>(&L, &x, &partition);
   end = chrono::system_clock::now();
-  elapsed_seconds = end - start;
-  cout << "level partitioned parallel lower triangular solve completed in "
-       << elapsed_seconds.count() << "s" << endl;
+  cout << ",";
   // verify
-  if (!x.equals(&target_x, THRESHOLD)) {
-    cerr << "level partitioned parallel lower triangular solve verification failed, output does not match original algorithm"
+  if (x.equals(&target_x, THRESHOLD)) {
+    elapsed_seconds = end - start;
+    cout << elapsed_seconds.count();
+  } else {
+    cerr << "level partitioned parallel lower triangular solve verification "
+            "failed, output does not match original algorithm"
          << endl;
   }
+  cout << endl;
   return 0;
 }
