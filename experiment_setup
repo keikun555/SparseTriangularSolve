@@ -1,40 +1,11 @@
-[?25l[?7l[0m[31m[1m            .-/+oossssoo+/-. 
-        `:+ssssssssssssssssss+:` 
-      -+ssssssssssssssssssyyssss+- 
-    .ossssssssssssssssss[37m[0m[1mdMMMNy[0m[31m[1msssso. 
-   /sssssssssss[37m[0m[1mhdmmNNmmyNMMMMh[0m[31m[1mssssss/ 
-  +sssssssss[37m[0m[1mhm[0m[31m[1myd[37m[0m[1mMMMMMMMNddddy[0m[31m[1mssssssss+ 
- /ssssssss[37m[0m[1mhNMMM[0m[31m[1myh[37m[0m[1mhyyyyhmNMMMNh[0m[31m[1mssssssss/ 
-.ssssssss[37m[0m[1mdMMMNh[0m[31m[1mssssssssss[37m[0m[1mhNMMMd[0m[31m[1mssssssss. 
-+ssss[37m[0m[1mhhhyNMMNy[0m[31m[1mssssssssssss[37m[0m[1myNMMMy[0m[31m[1msssssss+ 
-oss[37m[0m[1myNMMMNyMMh[0m[31m[1mssssssssssssss[37m[0m[1mhmmmh[0m[31m[1mssssssso 
-oss[37m[0m[1myNMMMNyMMh[0m[31m[1msssssssssssssshmmmh[0m[31m[1mssssssso 
-+ssss[37m[0m[1mhhhyNMMNy[0m[31m[1mssssssssssss[37m[0m[1myNMMMy[0m[31m[1msssssss+ 
-.ssssssss[37m[0m[1mdMMMNh[0m[31m[1mssssssssss[37m[0m[1mhNMMMd[0m[31m[1mssssssss. 
- /ssssssss[37m[0m[1mhNMMM[0m[31m[1myh[37m[0m[1mhyyyyhdNMMMNh[0m[31m[1mssssssss/ 
-  +sssssssss[37m[0m[1mdm[0m[31m[1myd[37m[0m[1mMMMMMMMMddddy[0m[31m[1mssssssss+ 
-   /sssssssssss[37m[0m[1mhdmNNNNmyNMMMMh[0m[31m[1mssssss/ 
-    .ossssssssssssssssss[37m[0m[1mdMMMNy[0m[31m[1msssso. 
-      -+sssssssssssssssss[37m[0m[1myyy[0m[31m[1mssss+- 
-        `:+ssssssssssssssssss+:` 
-            .-/+oossssoo+/-. 
-[20A[9999999D[43C[0m[1m[0m[31m[1mkimada@[0m[31m[1mKXPS13[0m 
-[43C[0m-------------[0m 
-[43C[0m[31m[1mOS[0m[0m:[0m Ubuntu 18.04.5 LTS x86_64[0m 
-[43C[0m[31m[1mHost[0m[0m:[0m XPS 13 9370[0m 
-[43C[0m[31m[1mKernel[0m[0m:[0m 5.4.0-62-generic[0m 
-[43C[0m[31m[1mUptime[0m[0m:[0m 2 hours, 26 mins[0m 
-[43C[0m[31m[1mPackages[0m[0m:[0m 2480[0m 
-[43C[0m[31m[1mShell[0m[0m:[0m zsh 5.4.2[0m 
-[43C[0m[31m[1mResolution[0m[0m:[0m 1920x1080, 2560x1600[0m 
-[43C[0m[31m[1mWM[0m[0m:[0m i3[0m 
-[43C[0m[31m[1mTheme[0m[0m:[0m Adwaita [GTK3][0m 
-[43C[0m[31m[1mIcons[0m[0m:[0m Adwaita [GTK3][0m 
-[43C[0m[31m[1mCPU[0m[0m:[0m Intel i7-8550U (8) @ 4.000GHz[0m 
-[43C[0m[31m[1mGPU[0m[0m:[0m Intel UHD Graphics 620[0m 
-[43C[0m[31m[1mMemory[0m[0m:[0m 6153MiB / 15729MiB[0m 
-
-[43C[0m[30m[40m   [0m[31m[41m   [0m[32m[42m   [0m[33m[43m   [0m[34m[44m   [0m[35m[45m   [0m[36m[46m   [0m[37m[47m   [0m
-
-
-[2B[?25h[?7h
+OS: Ubuntu 18.04.5 LTS x86_64
+Host: XPS 13 9370
+Kernel: 5.4.0-62-generic
+Shell: zsh 5.4.2
+WM: i3
+Theme: Adwaita [GTK3]
+Icons: Adwaita [GTK3]
+Terminal: alacritty
+CPU: Intel i7-8550U (8 cores) @ 4.000GHz
+GPU: Intel UHD Graphics 620
+Total Memory: 15729MiB (16GB)
