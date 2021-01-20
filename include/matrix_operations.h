@@ -10,7 +10,7 @@
 
 /*
  * Lower triangular solver Lx=b
- * partitioning : the partitioning for parallel computation, if any
+ * partition : the partitioning for parallel computation, if any
  * input_vector : the right hand-side b at start and the solution x at the end.
  */
 template <typename T>
@@ -21,8 +21,7 @@ template <typename T>
 int partitioned_parallel_lsolve(CCSMatrix<T> *matrix, T *x,
                                 Partition *partition);
 
-/*
- * Sparse matrix-vector multiply: y = A*x */
+/* Sparse matrix-vector multiply: y = A*x */
 template <typename T>
 int spmv_ccs(CCSMatrix<T> *matrix, DenseVector<T> *input_vector,
              DenseVector<T> *output_vector);
@@ -45,7 +44,7 @@ int lsolve(CCSMatrix<T> *matrix, DenseVector<T> *input_vector) {
   T *x = input_vector->values_get();
   int p, j;
   if (!Lp || !Li || !x) {
-    return 1;               /* check inputs */
+    return 1; /* check inputs */
   }
   for (j = 0; j < n; j++) { // for every col in L, row in x
     x[j] /= Lx[Lp[j]];      // hopefully the diagonals are nonzero
@@ -67,12 +66,12 @@ int parallel_lsolve(CCSMatrix<T> *matrix, DenseVector<T> *input_vector) {
   T *Lx = matrix->values_get();
   T *x = input_vector->values_get();
   int p, j;
-  if (!Lp || !Li || !x){
-    return 1;               /* check inputs */
+  if (!Lp || !Li || !x) {
+    return 1; /* check inputs */
   }
   for (j = 0; j < n; j++) { // for every col in L, row in x
     x[j] /= Lx[Lp[j]];      // hopefully the diagonals are nonzero
-#pragma omp parallel default(shared) private(p)
+#pragma omp parallel default(shared) private(p) num_threads(8)
 #pragma omp for
     for (p = Lp[j] + 1; p < Lp[j + 1]; p++) {
       x[Li[p]] -= Lx[p] * x[j];
@@ -93,23 +92,21 @@ int partitioned_parallel_lsolve(CCSMatrix<T> *matrix,
   T *Lx = matrix->values_get();
   T *x = input_vector->values_get();
   vector<vector<int>> partitioning = partition->partitioning_get();
-  if (!Lp || !Li || !x){
+  if (!Lp || !Li || !x) {
     return 1; /* check inputs */
   }
   for (unsigned int i = 0; i < partitioning.size(); i++) {
     vector<int> partition = partitioning[i];
-#pragma omp parallel default(shared)
-    {
+#pragma omp parallel default(shared) num_threads(8)
 #pragma omp for
-      for (unsigned int part_idx = 0; part_idx < partition.size(); part_idx++) {
-        int j = partition[part_idx];
-        x[j] /= Lx[Lp[j]]; // hopefully the diagonals are nonzero
-        for (int p = Lp[j] + 1; p < Lp[j + 1]; p++) {
-          double tmp = Lx[p] * x[j];
-          int x_idx = Li[p];
+    for (unsigned int part_idx = 0; part_idx < partition.size(); part_idx++) {
+      int j = partition[part_idx];
+      x[j] /= Lx[Lp[j]]; // hopefully the diagonals are nonzero
+      for (int p = Lp[j] + 1; p < Lp[j + 1]; p++) {
+        double tmp = Lx[p] * x[j];
+        int x_idx = Li[p];
 #pragma omp atomic
-          x[x_idx] -= tmp;
-        }
+        x[x_idx] -= tmp;
       }
     }
   }
@@ -156,6 +153,8 @@ int parallel_spmv_ccs(CCSMatrix<T> *matrix, DenseVector<T> *input_vector,
     return 1; /* check inputs */
   }
   for (j = 0; j < n; j++) {
+#pragma omp parallel default(shared) private(p)
+#pragma omp for
     for (p = Ap[j]; p < Ap[j + 1]; p++) {
       y[Ai[p]] += Ax[p] * x[j];
     }

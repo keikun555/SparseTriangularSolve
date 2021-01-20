@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   CCSMatrix<long double> L;
   L.from_matrix_market_filename(L_filename);
   L.to_lower_triangular();
-  L.fill_diag(1);
+  // L.fill_diag(1, true); // not sure if the diagonals should be filled in
   DenseVector<long double> b, target_x;
   b.from_matrix_market_filename(b_filename);
   target_x.from_dense_vector(&b);

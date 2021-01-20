@@ -51,9 +51,10 @@ void Partition::from_lower_triangular_matrix(CCSMatrix<T> *matrix) {
           orphans.remove(row_idx);
         }
         // break; // only first nonzero elt off diagonal
-        // not sure why uncommenting the above line breaks TSOPF
+        // not sure why uncommenting the above line breaks the partitioning
         // since we should be able to skip the non first nonzero elt off the
-        // diagonal
+        // diagonal, as it states in page 15 of
+        // http://faculty.cse.tamu.edu/davis/publications_files/survey_tech_report.pdf
       }
     }
   }

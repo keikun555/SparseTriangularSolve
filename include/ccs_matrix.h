@@ -14,7 +14,8 @@ public:
   ~CCSMatrix();
   void from_matrix_market_filename(string const &matrix_market_filename);
   void to_lower_triangular();
-  void fill_diag(T fill_num);
+  /* fill the diagonal with fill_num values if zero */
+  void fill_diag(T fill_num, bool fill_nonzero);
   void clear();
   void print();
   int num_row_get() { return num_row; };
@@ -89,7 +90,7 @@ template <typename T> void CCSMatrix<T>::to_lower_triangular() {
   column_pointer[num_col] = num_val;
 }
 
-template <typename T> void CCSMatrix<T>::fill_diag(T fill_num) {
+template <typename T> void CCSMatrix<T>::fill_diag(T fill_num, bool fill_nonzero) {
   int new_num_val = num_val;
   int val_idx = 0;
   for (int j = 0; j < num_col; j++) {
@@ -118,7 +119,12 @@ template <typename T> void CCSMatrix<T>::fill_diag(T fill_num) {
       val_idx++;
       num_val++;
     }
-    if (row_index[val_idx] > j) {
+    if (row_index[val_idx] == j && fill_nonzero) {
+      new_values[num_val] = fill_num;
+      new_row_index[num_val] = row_index[val_idx];
+      val_idx++;
+      num_val++;
+    } else if (row_index[val_idx] > j) {
       // if diagonal is zero, make it nonzero
       new_values[num_val] = fill_num;
       new_row_index[num_val] = j;
