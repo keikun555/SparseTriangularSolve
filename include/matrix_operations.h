@@ -47,7 +47,7 @@ int lsolve(CCSMatrix<T> *matrix, DenseVector<T> *input_vector) {
     return 1; /* check inputs */
   }
   for (j = 0; j < n; j++) { // for every col in L, row in x
-    x[j] /= Lx[Lp[j]];      // hopefully the diagonals are nonzero
+    x[j] /= Lx[Lp[j]];
     for (p = Lp[j] + 1; p < Lp[j + 1]; p++) {
       x[Li[p]] -= Lx[p] * x[j];
     }
@@ -70,7 +70,7 @@ int parallel_lsolve(CCSMatrix<T> *matrix, DenseVector<T> *input_vector) {
     return 1; /* check inputs */
   }
   for (j = 0; j < n; j++) { // for every col in L, row in x
-    x[j] /= Lx[Lp[j]];      // hopefully the diagonals are nonzero
+    x[j] /= Lx[Lp[j]];
 #pragma omp parallel default(shared) private(p) num_threads(8)
 #pragma omp for
     for (p = Lp[j] + 1; p < Lp[j + 1]; p++) {
@@ -101,7 +101,7 @@ int partitioned_parallel_lsolve(CCSMatrix<T> *matrix,
 #pragma omp for
     for (unsigned int part_idx = 0; part_idx < partition.size(); part_idx++) {
       int j = partition[part_idx];
-      x[j] /= Lx[Lp[j]]; // hopefully the diagonals are nonzero
+      x[j] /= Lx[Lp[j]];
       for (int p = Lp[j] + 1; p < Lp[j + 1]; p++) {
         double tmp = Lx[p] * x[j];
         int x_idx = Li[p];
