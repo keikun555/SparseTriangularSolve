@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "adjacencyListGraph.h"
-#include "csc_matrix.h"
+#include "ccs_matrix.h"
 #include "edge.h"
 #include "stlHashTable.h"
 
@@ -57,7 +57,6 @@ void Partition::from_lower_triangular_matrix(CCSMatrix<T> *matrix) {
       }
     }
   }
-  // cout << "dependency graph populated" << endl;
   // level partitioning
   unsigned int num_partitioned =
       0; // counter to check for circular dependencies
@@ -67,7 +66,6 @@ void Partition::from_lower_triangular_matrix(CCSMatrix<T> *matrix) {
       int v = partition[i];
       num_partitioned++;
       orphans.remove(v);
-      // cout << v << " " << num_parents_dict.get(v) << endl;
       vector<Edge<int, int, int>> outgoing_edges =
           dependency_graph.getOutgoingEdges(v);
       for (unsigned int j = 0; j < outgoing_edges.size(); j++) {

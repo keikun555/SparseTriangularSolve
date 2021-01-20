@@ -152,7 +152,7 @@ template <typename T> void CCSMatrix<T>::clear() {
 }
 
 template <typename T> void CCSMatrix<T>::print() {
-  cout << "CSCMatrix" << endl;
+  cout << "ccsMatrix" << endl;
   cout << "  num_row:        " << num_row << endl;
   cout << "  num_col:        " << num_col << endl;
   cout << "  num_val:        " << num_val << endl;
