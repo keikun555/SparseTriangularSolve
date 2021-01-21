@@ -1,3 +1,9 @@
+/**
+ * Kei Imada
+ * 20210120
+ * Dense Vector implementation
+ */
+
 #pragma once
 
 #include <fstream>
@@ -8,32 +14,63 @@
 
 using namespace std;
 
+/**
+ * A dense vector of an arbitrary data type.
+ * @tparam T the type of vector values
+ */
 template <typename T> class DenseVector : public Matrix<T> {
 public:
   DenseVector(){};
   ~DenseVector();
-  void from_matrix_market_filename(string const &matrix_market_filename);
+  /**
+   * Populates the vector from a matrix market filepath
+   * @param matrix_market_filepath the filepath
+   */
+  void from_matrix_market_filepath(string const &matrix_market_filepath);
+  /**
+   * Populates the vector with zeros
+   * @param num_zeros the number of zeros this vector has
+   */
   void from_num_zeros(int num_zeros);
+  /**
+   * Populates the vector from another DenseVector
+   * Basically a copy operation
+   * @param vector the vector to copy from
+   */
   void from_dense_vector(DenseVector<T> *vector);
+  /**
+   * Clears the vector to uninitialized state
+   */
   void clear();
+  /**
+   * Prints the vector for debugging purposes
+   */
   void print();
-  /* threshold is the order of difference compared to the original values
-  e.g. 1000 vs 1001 -> order of threshold = (1001 - 1000) / 1000 = 1/1000 */
-  bool equals(DenseVector<T> *other_vector, float threshold);
+  /**
+   * Checks if the vector is approximately equal to another vector
+   * @param other_vector the vector to check approximate equality
+   * @param threshold the order of difference compared to the original values
+                      e.g. 1000 vs 1001 -> order of threshold = (1001 - 1000) / 1000 = 1/1000
+     @return bool whether the other vectors is approximately equal to this vector
+   */
+  bool approx_equals(DenseVector<T> *other_vector, float threshold);
+
+  // Getters
+
   int dimension_get() { return dimension; };
   T *values_get() { return values; };
 
 private:
-  int dimension = 0; // how many elements do we have in this vector?
+  int dimension = 0; // the number of elements in this vector
   T *values = nullptr;
 };
 
 template <typename T> DenseVector<T>::~DenseVector() { this->clear(); };
 
 template <typename T>
-void DenseVector<T>::from_matrix_market_filename(
-    string const &matrix_market_filename) {
-  ifstream file(matrix_market_filename);
+void DenseVector<T>::from_matrix_market_filepath(
+    string const &matrix_market_filepath) {
+  ifstream file(matrix_market_filepath);
 
   // Ignore comments headers
   while (file.peek() == '%')
@@ -87,7 +124,7 @@ template <typename T> void DenseVector<T>::clear() {
 }
 
 template <typename T>
-bool DenseVector<T>::equals(DenseVector<T> *other_vector, float threshold) {
+bool DenseVector<T>::approx_equals(DenseVector<T> *other_vector, float threshold) {
   if (!other_vector || dimension != other_vector->dimension_get()) {
     return false;
   }

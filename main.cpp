@@ -1,3 +1,9 @@
+/**
+ * Kei Imada
+ * 20210120
+ * Sparse Lower Triangular Solve
+ */
+
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -24,14 +30,15 @@ int main(int argc, char *argv[]) {
   string b_filename(argv[2]);
 
   CCSMatrix<long double> L;
-  L.from_matrix_market_filename(L_filename);
+  L.from_matrix_market_filepath(L_filename);
   L.to_lower_triangular();
-  // L.fill_diag(1, true); // not sure if the diagonals should be filled in
+  // L.fill_diag(1, true); // was initially not sure if the diagonals should be
+  // filled in
   DenseVector<long double> b, target_x;
-  b.from_matrix_market_filename(b_filename);
+  b.from_matrix_market_filepath(b_filename);
   target_x.from_dense_vector(&b);
 
-  // naive
+  // original
   chrono::time_point<chrono::system_clock> start, end;
   start = chrono::system_clock::now();
   lsolve<long double>(&L, &target_x);
@@ -42,7 +49,13 @@ int main(int argc, char *argv[]) {
   DenseVector<long double> y;
   y.from_num_zeros(b.dimension_get());
   spmv_ccs(&L, &target_x, &y);
-  if (!y.equals(&b, THRESHOLD)) {
+  if (!y.approx_equals(&b, THRESHOLD)) {
+    /**
+     * even if the matrix multiplication verification fails, we are measuring
+     * the optimizations made to the original algorithm, hence we only check if
+     * the output of the optimizations match the output of the original
+     * algorithm
+     */
     cerr << "matrix multiplication verification failed\n"
             "  the original lower triangular solve algorithm failed to solve "
             "this matrix"
@@ -57,7 +70,7 @@ int main(int argc, char *argv[]) {
   end = chrono::system_clock::now();
   cout << ",";
   // verify
-  if (x.equals(&target_x, THRESHOLD)) {
+  if (x.approx_equals(&target_x, THRESHOLD)) {
     elapsed_seconds = end - start;
     cout << elapsed_seconds.count();
   } else {
@@ -66,7 +79,7 @@ int main(int argc, char *argv[]) {
          << endl;
   }
 
-  // level partitioning parallelization
+  // level set partitioning parallelization
   x.clear();
   x.from_dense_vector(&b);
   Partition partition;
@@ -76,7 +89,7 @@ int main(int argc, char *argv[]) {
   end = chrono::system_clock::now();
   cout << ",";
   // verify
-  if (x.equals(&target_x, THRESHOLD)) {
+  if (x.approx_equals(&target_x, THRESHOLD)) {
     elapsed_seconds = end - start;
     cout << elapsed_seconds.count();
   } else {

@@ -8,29 +8,58 @@
 #include "dense_vector.h"
 #include "partition.h"
 
-/*
- * Lower triangular solver Lx=b
- * partition : the partitioning for parallel computation, if any
- * input_vector : the right hand-side b at start and the solution x at the end.
+using namespace std;
+
+/**
+ * Original lower triangular solver Lx=b
+ * @tparam the type of matrix values
+ * @param matrix the matrix L
+ * @param input_vector the right hand-side b at start and the solution x at the
+ *                     end
  */
 template <typename T>
 int lsolve(CCSMatrix<T> *matrix, DenseVector<T> *input_vector);
+/**
+ * Naively parallel lower triangular solver Lx=b
+ * @tparam the type of matrix values
+ * @param matrix the matrix L
+ * @param input_vector the right hand-side b at start and the solution x at the
+ *                     end
+ */
 template <typename T>
 int parallel_lsolve(CCSMatrix<T> *matrix, DenseVector<T> *input_vector);
+/**
+ * Level set partitioning parallel lower triangular solver Lx=b
+ * @tparam the type of matrix values
+ * @param matrix the matrix L
+ * @param input_vector the right hand-side b at start and the solution x at the
+ *                     end
+ * @param partition the partitioning for parallel computation, if any
+ */
 template <typename T>
 int partitioned_parallel_lsolve(CCSMatrix<T> *matrix, T *x,
                                 Partition *partition);
 
-/* Sparse matrix-vector multiply: y = A*x */
+/**
+ * Sparse matrix-vector multiply: y = A*x
+ * @tparam T the type of matrix values
+ * @param matrix the matrix A
+ * @param input_vector the vector x
+ * @param output_vector the vector y, must be all zeros
+ */
 template <typename T>
 int spmv_ccs(CCSMatrix<T> *matrix, DenseVector<T> *input_vector,
              DenseVector<T> *output_vector);
+/**
+ * Naively parallel sparse matrix-vector multiply: y = A*x
+ * @tparam T the type of matrix values
+ * @param matrix the matrix A
+ * @param input_vector the vector x
+ * @param output_vector the vector y, must be all zeros
+ */
 template <typename T>
 int parallel_spmv_ccs(CCSMatrix<T> *matrix, DenseVector<T> *input_vector,
                       DenseVector<T> *output_vector);
-
-/* implementations */
-using namespace std;
 
 template <typename T>
 int lsolve(CCSMatrix<T> *matrix, DenseVector<T> *input_vector) {
@@ -153,7 +182,7 @@ int parallel_spmv_ccs(CCSMatrix<T> *matrix, DenseVector<T> *input_vector,
     return 1; /* check inputs */
   }
   for (j = 0; j < n; j++) {
-#pragma omp parallel default(shared) private(p)
+#pragma omp parallel default(shared) private(p) num_threads(8)
 #pragma omp for
     for (p = Ap[j]; p < Ap[j + 1]; p++) {
       y[Ai[p]] += Ax[p] * x[j];

@@ -1,7 +1,12 @@
+/**
+ * Kei Imada
+ * 20210120
+ * Partition of indices
+ */
+
 #pragma once
 
 #include <iostream>
-#include <omp.h>
 #include <vector>
 
 #include "adjacencyListGraph.h"
@@ -11,17 +16,35 @@
 
 using namespace std;
 
+/**
+ * Stores a partition of indices, used during the symbolic analysis of sparse
+ * lower triangular solve
+ */
 class Partition {
 public:
   Partition(){};
   ~Partition();
+  /**
+   * Generates a level set partitioning from a lower triangular CCSMatrix
+   * @tparam T the type of matrix values
+   * @param matrix the CCSMatrix
+   */
   template <typename T> void from_lower_triangular_matrix(CCSMatrix<T> *matrix);
-  vector<vector<int>> partitioning_get() { return partitioning; };
+  /**
+   * Clears the partition to an uninitialized state
+   */
   void clear();
+  /**
+   * Prints the partition for debugging purposes
+   */
   void print();
 
+  // Getters
+
+  vector<vector<int>> partitioning_get() { return partitioning; };
+
 private:
-  vector<vector<int>> partitioning;
+  vector<vector<int>> partitioning; // contains the index partitioning
 };
 
 template <typename T>

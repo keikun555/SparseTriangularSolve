@@ -1,3 +1,9 @@
+/**
+ * Kei Imada
+ * 20210120
+ * Column Compressed Sparse Matrix implementation
+ */
+
 #pragma once
 
 #include <fstream>
@@ -8,16 +14,41 @@
 
 using namespace std;
 
+/**
+ * Matrix in compressed column sparse format
+ * for a matrix of an arbitrary data type.
+ * @tparam T the type of matrix values
+ */
 template <typename T> class CCSMatrix : public Matrix<T> {
 public:
   CCSMatrix(){};
   ~CCSMatrix();
-  void from_matrix_market_filename(string const &matrix_market_filename);
+  /**
+   * Populates the matrix from a matrix market filepath
+   * @param matrix_market_filepath the filepath
+   */
+  void from_matrix_market_filepath(string const &matrix_market_filepath);
+  /**
+   * Removes all non lower triangular values of the CCSMatrix in place
+   */
   void to_lower_triangular();
-  /* fill the diagonal with fill_num values if zero */
+  /**
+   * fill the diagonal with fill_num values if zero
+   * @param fill_num the number to fill the diagonal with
+   * @param fill_nonzero whether to replace nonzero values
+   */
   void fill_diag(T fill_num, bool fill_nonzero);
+  /**
+   * Clears the matrix to uninitialized state
+   */
   void clear();
+  /**
+   * Prints the matrix for debugging purposes
+   */
   void print();
+
+  // Getters
+
   int num_row_get() { return num_row; };
   int num_col_get() { return num_col; };
   int num_val_get() { return num_val; };
@@ -35,9 +66,9 @@ private:
 };
 
 template <typename T>
-void CCSMatrix<T>::from_matrix_market_filename(
-    string const &matrix_market_filename) {
-  ifstream file(matrix_market_filename);
+void CCSMatrix<T>::from_matrix_market_filepath(
+    string const &matrix_market_filepath) {
+  ifstream file(matrix_market_filepath);
 
   // Ignore comments headers
   while (file.peek() == '%')
@@ -90,7 +121,8 @@ template <typename T> void CCSMatrix<T>::to_lower_triangular() {
   column_pointer[num_col] = num_val;
 }
 
-template <typename T> void CCSMatrix<T>::fill_diag(T fill_num, bool fill_nonzero) {
+template <typename T>
+void CCSMatrix<T>::fill_diag(T fill_num, bool fill_nonzero) {
   int new_num_val = num_val;
   int val_idx = 0;
   for (int j = 0; j < num_col; j++) {
@@ -158,7 +190,7 @@ template <typename T> void CCSMatrix<T>::clear() {
 }
 
 template <typename T> void CCSMatrix<T>::print() {
-  cout << "ccsMatrix" << endl;
+  cout << "CCSMatrix" << endl;
   cout << "  num_row:        " << num_row << endl;
   cout << "  num_col:        " << num_col << endl;
   cout << "  num_val:        " << num_val << endl;
